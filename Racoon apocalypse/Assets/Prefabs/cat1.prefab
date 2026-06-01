@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 8671670763076205743}
   - component: {fileID: 5623266727708836058}
   - component: {fileID: 7061408451312080966}
-  - component: {fileID: 5924083722479719758}
   m_Layer: 0
   m_Name: cat1
   m_TagString: Untagged
@@ -157,17 +156,3 @@ CapsuleCollider2D:
   m_Offset: {x: 0, y: 0}
   m_Size: {x: 0.7, y: 1}
   m_Direction: 0
---- !u!114 &5924083722479719758
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 705455341425624156}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f9fd21d8592b1834b9adbfd1f970259a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::AnimalFollower
-  player: {fileID: 0}
-  speed: 2

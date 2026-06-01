@@ -2,18 +2,21 @@ using UnityEngine;
 
 public class DestructibleCage : MonoBehaviour
 {
-    public int pv = 3;
-    public AnimalFollower animalInside;
 
-    public void TakeDamage(int dmg)
+    public void LibererAnimal()
     {
-        pv -= dmg;
-
-        if (pv <= 0)
+        if (ScoreManager.instance != null)
         {
-            animalInside.Follow(); 
-            Destroy(gameObject);
+            ScoreManager.instance.AddPoint();
         }
+
+     
+        Destroy(gameObject);
     }
 
+  
+    private void OnMouseDown()
+    {
+        LibererAnimal();
+    }
 }

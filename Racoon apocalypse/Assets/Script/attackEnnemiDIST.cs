@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class attackEnnemiDIST : MonoBehaviour
@@ -13,56 +12,73 @@ public class attackEnnemiDIST : MonoBehaviour
     private Transform player;
 
     public float speedProjectil = 1f;
-
     public float reloadTime = 0.5f;
-    private bool reloading;
+    
+    private float reloadCountdown = 0f;
 
     private Vector3 direction;
     private float angleProjectil;
 
-    private SpriteRenderer skin;
-
     private Animator anim;
 
     void Start() {
-        player = GameObject.FindGameObjectWithTag("Player").transform;
-        skin = GetComponent<SpriteRenderer>();
-        positionWeapon = weapon.localPosition;
+        if (Gameloop.Instance != null && Gameloop.Instance.PlayerTransform != null) {
+            player = Gameloop.Instance.PlayerTransform;
+        } else {
+            Debug.LogError("Attention : Impossible de récupérer le joueur via Gameloop.Instance !");
+        }
+
         anim = GetComponent<Animator>();
+
+        if (weapon != null) {
+            positionWeapon = weapon.localPosition;
+        } else {
+            Debug.LogError($"Il manque le Transform 'Weapon' sur le script d'attaque de {gameObject.name} !");
+        }
     }
 
     void Update() {
+        if (player == null || weapon == null) return;
+
         lookCheck();
+
         direction = player.position - weapon.position;
         direction.Normalize();
         angleProjectil = Vector3.SignedAngle(transform.right, direction, Vector3.forward);
 
-        if (Vector2.Distance(transform.position, player.position) < distanceAggro && !reloading) {
-            if (anim != null) {
-                //anim.SetTrigger("attackDIST");
-            }            
+        float distanceAuJoueur = Vector2.Distance(transform.position, player.position);
 
-            reloading = true;
+        if (anim != null) {
+            anim.SetBool("isAttacking", distanceAuJoueur < distanceAggro);
+        }
+
+      
+        if (reloadCountdown > 0f) {
+            reloadCountdown -= Time.deltaTime;
+        }
+
+        if (distanceAuJoueur < distanceAggro && reloadCountdown <= 0f) {
+            
+            reloadCountdown = reloadTime;
+            
             projectilSave = Instantiate(projectil, weapon.position, Quaternion.Euler(0, 0, angleProjectil));
-            projectilSave.GetComponent<Rigidbody2D>().linearVelocity = direction * speedProjectil;
-            projectilSave.GetComponent<projectilEnnemi>().degats = degats;
-            StartCoroutine(waitShoot());
+            
+            if (projectilSave.GetComponent<Rigidbody2D>() != null) {
+                projectilSave.GetComponent<Rigidbody2D>().linearVelocity = direction * speedProjectil;
+            }
+            
+            if (projectilSave.GetComponent<projectilEnnemi>() != null) {
+                projectilSave.GetComponent<projectilEnnemi>().degats = degats;
+            }
         }
     }
 
     void lookCheck() {
         if (transform.position.x < player.position.x) {
-            skin.flipX = false;
             weapon.localPosition = positionWeapon;
         }
-        if (transform.position.x > player.position.x) {
-            skin.flipX = true;
+        else if (transform.position.x > player.position.x) {
             weapon.localPosition = new Vector3(-positionWeapon.x, positionWeapon.y, 0);
         }
-    }
-
-    IEnumerator waitShoot() {
-        yield return new WaitForSeconds(reloadTime);
-        reloading = false;
     }
 }
